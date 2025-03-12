@@ -65,7 +65,7 @@ def signup(request):
         user.set_password(password)
         user.save()
         messages.success(request, "Account created successfully!")
-        return redirect('login')  # Redirect to login or another page after successful signup
+        return redirect('set_login')  # Redirect to login or another page after successful signup
 
     return render(request, 'client/auth/signup.html')  # Return the form if the request method is GET
 

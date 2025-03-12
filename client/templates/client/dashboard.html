@@ -6,8 +6,13 @@
             <h1 class="fw-bold display-3">Welcome to Dashboard :   {{username}}</h1>
             <p class="lead">A sleek and modern interface for the best user experience.</p>
             {% if not user_authenticated %}
-                <div class="cta mt-4">
-                    <a href="/profile" class="btn btn-lg btn-primary px-4 py-2 shadow-sm">View Profile</a>
+                <div class="d-flex justify-content-center">
+                    <div class="me-2">
+                        <a href="/profile" class="btn btn-lg btn-primary px-4 py-2 shadow-sm">View Profile</a>
+                    </div>
+                    <div class="me-2">
+                        <a href="/manage-students" class="btn btn-lg btn-primary px-4 py-2 shadow-sm">Manage Students</a>
+                    </div>
                 </div>
             {% endif %}
         </div>
