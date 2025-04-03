@@ -12,7 +12,10 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import get_user_model
-
+import sys
+from django.core.files.storage import FileSystemStorage
+import os
+from django.conf import settings
 
 
 # Create your views here.
@@ -115,18 +118,27 @@ def profile(request):
         return redirect('set_login')
     
     if request.method == 'POST':
+        filename = ''
+        if 'image' in request.FILES:
+            image = request.FILES['image']
+
+            # media_path = os.path.join(Static_URL, 'media/profile_pics/')
+            
+            # if not os.path.exists(media_path):
+            #     os.makedirs(media_path)
+                
+            fs = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'profile_pics'))  # Save inside 'media/profile_pics/'
+            filename = fs.save(image.name, image)
+            uploaded_file_url = fs.url(filename)
+            
+            # return HttpResponse(f"Image received: {uploaded_file_url}")  # Debug response
+        
         first_name  =   request.POST.get('first_name')
         last_name   =   request.POST.get('last_name')
         email       =   request.POST.get('email')
-        password    =   request.POST.get('password')
-        confirm_password    =   request.POST.get('confirm_password')
+        
         phone       =   request.POST.get('phone')
         address     =   request.POST.get('address')
-        
-        # Check if the password and confirm password match
-        if password != confirm_password:
-            messages.error(request, "Passwords do not match...")
-            return redirect('profile')
         
         # Update the user's profile
         user            =   request.user
@@ -135,8 +147,24 @@ def profile(request):
         user.email      =   email
         user.phone      =   phone
         user.address    =   address
-        # Encrypt the password
-        user.set_password(password)
+        user.image      =   filename
+        
+        print(user.__dict__)  # Prints all attributes of the user
+
+        return HttpResponse("Something went wrong, but the server is still running.")
+        
+        
+        
+        if( request.POST.get('password') != ''):
+            password    =   request.POST.get('password')
+            confirm_password    =   request.POST.get('confirm_password')
+            if password != confirm_password:
+                messages.error(request, "Passwords do not match...")
+                return redirect('profile')
+            # Encrypt the password
+            user.set_password(password)
+            
+            
         user.save()
         messages.success(request, "Profile updated successfully!")
 
